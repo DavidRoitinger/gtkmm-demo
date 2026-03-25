@@ -1,6 +1,74 @@
 .label {
     font-weight: 700;
     font-size: 60px;
-    background-color: deeppink;
+    background-color: gray;
     border: 2px solid black;
+}
+
+.Normal{
+    background-color: lightgray;
+}
+.Fire{
+    background-color: orange;
+}
+.Water{
+    background-color: blue;
+}
+.Electric{
+    background-color: yellow;
+}
+.Grass{
+    background-color: green;
+}
+.Ice{
+    background-color: turquoise;
+}
+.Fighting{
+    background-color: brown;
+}
+.Poison{
+    background-color: purple;
+}
+.Ground{
+    background-color: rgb(141, 92, 69);
+}
+.Flying{
+    background-color: lightblue;
+}
+.Psychic{
+    background-color: palevioletred;
+}
+.Bug{
+    background-color: greenyellow;
+}
+.Rock{
+    background-color: rgb(212, 183, 168);
+}
+.Ghost{
+    background-color: blueviolet;
+}
+.Dragon{
+    background-color: midnightblue;
+}
+.Dark{
+    background-color: rgb(70, 23, 2);
+}
+.Steel{
+    background-color: darkgray;
+}
+.Fairy{
+    background-color: pink;
+}
+
+.true {
+    background-image: none;
+    background-color: lightgreen;
+    border-color: green;
+    color: darkgreen;
+}
+.false {
+    background-image: none;
+    background-color: pink;
+    border-color: red;
+    color: darkred;
 }

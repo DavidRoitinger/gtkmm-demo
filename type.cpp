@@ -10,6 +10,7 @@ class Type {
         this->name = name;
         std::cout << "Type " << this->name << " constructed " << id << "\n";
     };
+    
     ~Type(){
         resistantAgainstTypes.~vector();
         weakAgainstTypes.~vector();

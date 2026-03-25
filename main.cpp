@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <regex>
+#include <time.h>
+#include <cstdlib>
 #include <gtkmm/button.h>
 #include <gtkmm.h>
 #include <gtkmm/application.h>
@@ -11,68 +13,70 @@ class MyWindow : public Gtk::Window
 {
     public:
         MyWindow() {
+            srand (time(NULL));
+            loadCss();
 
-          loadCss();
+            loadTypesFromCsv("chart.csv");
 
-          loadTypesFromCsv("chart.csv");
-          
+            
+            
+            m_button_super_effective = Gtk::Button("Super Effective!");
+            m_button_super_effective.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::onSuperEffectiveClicked));
+
+            m_button_effective = Gtk::Button("Effective!");
+            m_button_effective.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::onEffectiveClicked));
+            
+            m_button_not_effective = Gtk::Button("Not Effective!");
+            m_button_not_effective.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::onNotEffectiveClicked)); 
+            
+            m_button_procced = Gtk::Button("Procced!");
+            m_button_procced.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::reset));
 
 
-          auto type = Type("Test");
-          auto type_1 = Type("Demo");
+            m_label_left = Gtk::Label(m_types.at(0).name);
+            m_label_left.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
+            m_label_left.add_css_class("label");
+            m_label_left.add_css_class(m_types.at(0).name);
 
-          
-          type.~Type();
-          type_1.~Type();
-          m_button_super_effective = Gtk::Button("Super Effective!");
-          m_button_super_effective.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::onSuperEffectiveClicked));
+            m_label_right = Gtk::Label(m_types.at(0).name);
+            m_label_right.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
+            m_label_right.add_css_class("label");
+            m_label_right.add_css_class(m_types.at(0).name);
 
-          m_button_not_effective = Gtk::Button("Not Effective!");
-          m_button_not_effective.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::onNotEffectiveClicked));
+            m_label_solution = Gtk::Label("XXXXX");
+            m_label_solution.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
+            m_label_solution.add_css_class("label");
 
-          m_label_left = Gtk::Label("Hello!");
-          m_label_left.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
-          m_label_left.add_css_class("label");
-          m_label_left.add_css_class("left");
+            
 
-          m_label_rigth = Gtk::Label("Hello!");
-          m_label_rigth.get_style_context()->add_provider(css_provider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
-          m_label_rigth.add_css_class("label");
-          m_label_rigth.add_css_class("rigth");
+            reset();
 
-          //m_picture = Gtk::Picture("/home/david/Pictures/arg.png");
+            m_layout_grid = Gtk::Grid();
 
-          m_layout_grid = Gtk::Grid();
-
-          for (int x = 0; x < 7; x++)
-          {
-            for (int y = 0; y < 5; y++)
+            for (int x = 0; x < 7; x++)
             {
-              auto empty_label = Gtk::Label("");
-              m_layout_grid.attach(empty_label, x, y);
+            for (int y = 0; y < 6; y++)
+            {
+                auto empty_label = Gtk::Label("");
+                m_layout_grid.attach(empty_label, x, y);
             }
-          }
+            }
 
+            m_layout_grid.attach(m_label_left, 1, 1, 2);
+            m_layout_grid.attach(m_label_right, 4, 1, 2);
 
-          //m_layout_grid.attach(m_button, 0, 0);
-          //m_layout_grid.attach(m_picture, 2, 2);
+            m_layout_grid.attach(m_button_super_effective, 2, 3);
+            m_layout_grid.attach(m_button_effective, 3, 4);
+            m_layout_grid.attach(m_button_not_effective, 4, 3);
+            m_layout_grid.attach(m_button_procced, 3, 2);
+            m_layout_grid.attach(m_label_solution, 3, 3);
 
-          m_layout_grid.attach(m_label_left, 1, 1, 2);
-          m_layout_grid.attach(m_label_rigth, 4, 1, 2);
+            m_layout_grid.set_row_homogeneous(true);
+            m_layout_grid.set_column_homogeneous(true);
 
-          m_layout_grid.attach(m_button_super_effective, 2, 3);
-          m_layout_grid.attach(m_button_not_effective, 4, 3);
-
-          m_layout_grid.set_row_homogeneous(true);
-          m_layout_grid.set_column_homogeneous(true);
-
-          set_child(m_layout_grid);
-          set_size_request(800, 600);
+            set_child(m_layout_grid);
+            set_size_request(800, 600);
         }
-
-        // void onButtonClicked(){
-        //   std::cout << "Hello\n";
-        // }
 
         void loadCss(){
           css_provider = Gtk::CssProvider::create();
@@ -80,13 +84,68 @@ class MyWindow : public Gtk::Window
         }
 
         void onNotEffectiveClicked(){
-          std::cout << "No\n";
+          if(checkEffectiveness() == 0){
+            std::cout << "Yeepie\n";
+            m_label_solution.add_css_class("true");
+          }else{
+            m_label_solution.add_css_class("false");
+          }
+          //reset();
+        }
+
+        void onEffectiveClicked(){
+          if(checkEffectiveness() == 1){
+            std::cout << "Yeepie\n";
+           m_label_solution.add_css_class("true");
+          }else{
+            m_label_solution.add_css_class("false");
+          }
+          //reset();
         }
 
         void onSuperEffectiveClicked(){
-          std::cout << "Yes\n";
+          if(checkEffectiveness() == 2){
+            std::cout << "Yeepie\n";
+           m_label_solution.add_css_class("true");
+          }else{
+            m_label_solution.add_css_class("false");
+          }
+          //reset();
         }
 
+        int checkEffectiveness(){
+            std::cout << "Help\n";
+            std::cout << m_type_def->resistantAgainstTypes.size() << "res\n";
+            std::cout << m_type_def->weakAgainstTypes.size() << "weak\n";
+            for (int i = 0; i < m_type_def->resistantAgainstTypes.size(); i++)
+            {
+                if(m_type_def->resistantAgainstTypes.at(i) == m_type_atk->id){
+                    return 0;
+                }
+            }
+            for (int i = 0; i < m_type_def->weakAgainstTypes.size(); i++)
+            {
+                if(m_type_def->weakAgainstTypes.at(i) == m_type_atk->id){
+                    return 2;
+                }
+            }
+            return 1;
+        }
+
+        void reset(){
+            m_label_solution.remove_css_class("false");
+            m_label_solution.remove_css_class("true");
+            m_type_atk = changeLabel(&m_label_left, rand() % m_types.size());
+            m_type_def = changeLabel(&m_label_right, rand() % m_types.size());
+        }
+
+        Type* changeLabel(Gtk::Label *label, int id){
+            
+            label->remove_css_class(label->get_text());
+            label->set_text(m_types.at(id).name);
+            label->add_css_class(m_types.at(id).name);
+            return &m_types.at(id);
+        }
 
         void loadTypesFromCsv(std::string path){
             std::ifstream in_file;
@@ -118,6 +177,9 @@ class MyWindow : public Gtk::Window
 
                 std::string weak_string = *outer_iterator;
                 auto weakIds = parseSubCsv(weak_string);
+
+                currentType->resistantAgainstTypes = resistantIds;
+                currentType->weakAgainstTypes = weakIds;
             }
         }
         std::vector<int> parseSubCsv(std::string part){
@@ -154,15 +216,21 @@ class MyWindow : public Gtk::Window
         }
         std::vector<Type> m_types = std::vector<Type>();
 
+        Type *m_type_atk = new Type("Hello");
+        Type *m_type_def = new Type("Hello");
 
         // Gtk::Picture m_picture;
-        // Gtk::Button m_button;
+        Gtk::Button m_button_procced;
         Gtk::Button m_button_super_effective;
+        Gtk::Button m_button_effective;
         Gtk::Button m_button_not_effective;
         Gtk::Label m_label_left;
-        Gtk::Label m_label_rigth;
+        Gtk::Label m_label_right;
+        Gtk::Label m_label_solution;
         Gtk::Grid m_layout_grid;
         Glib::RefPtr<Gtk::CssProvider> css_provider;
+
+
 };
 
 int main(int argc, char **argv)
